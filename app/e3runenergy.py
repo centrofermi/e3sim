@@ -76,12 +76,21 @@ if __name__ == '__main__':
     logger = logging.getLogger('full')
     logger.info('Started')
 
+    # Call the function to change the energy
     change_energy(corsikaBin,
                   corsikaPath,
                   corsikaMasterInput,
                   outputDir,
                   resultFile,
                   energyList)
+
+    # Save general info
+    with open(os.path.join(outputDir, 'e3run_summary.txt'), "w") as w:
+        w.write('General Info about this Run\n')
+        w.write('machine = ' + machine + '\n')
+        w.write('corsikaBin = ' + corsikaBin + '\n')
+        w.write('corsikaMasterInput = ' + corsikaMasterInput + '\n')
+        w.write('energyList = ' + str(energyList) + '\n')
 
     # Final log message
     logger.info('Finished')
