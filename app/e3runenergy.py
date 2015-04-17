@@ -29,6 +29,7 @@ Created on Thu Apr 16 12:12:13 2015
 
 import logging
 import logging.config
+import os
 import pkg_resources
 from e3sim.tasks.change_energy import change_energy
 from e3sim.config.specific_machine import machine
@@ -60,7 +61,9 @@ if __name__ == '__main__':
     except:
         parser = ConfigParser.ConfigParser()
     parser.read(
-        pkg_resources.resource_filename('e3sim', 'config/files_location.ini'))
+        pkg_resources.resource_filename(
+            'e3sim',
+            os.path.join('config', 'files_location.ini')))
     logConfigFile = parser.get(machine, 'logConfigFile')
     corsikaBin = parser.get(machine, 'corsikaBin')
     corsikaPath = parser.get(machine, 'corsikaPath')

@@ -23,8 +23,12 @@ def change_energy(corsikaBin,
     logger.info('Function ' + sys._getframe().f_code.co_name + ' started')
     run_number = 0
 
-    w = open(os.path.join(outputDir, resultFile), 'w')
-    w.write('Energy (GeV)' + "\t" + 'CPU Time' + "\n")
+    # Writing headers to the output file
+    with open(os.path.join(outputDir, resultFile), 'w') as w:
+        w.write('Energy (GeV)' + "\t" + 'CPU Time' + "\n")
+
+    logger = logging.getLogger('full')
+    # Main Loop
     for energy in energyList:
         # Write corsika input file
         with open(os.path.join(outputDir, "input-energy-" + str(energy)),
@@ -39,19 +43,22 @@ def change_energy(corsikaBin,
                     line = line.replace('output_dir', outputDir + "/")
                     outfile.write(line)
 
-        # Run corsika on input file
+        # Define corsika command and the spedific input file
         cmd = "cd " + corsikaPath + "; " +\
             os.path.join(corsikaPath, corsikaBin) + " < " +\
             os.path.join(outputDir, "input-energy-" + str(energy)) + " > " +\
             os.path.join(outputDir, "output-" + str(energy))
 
+        # Run command
+        logger.info('About to exec: ' + cmd)
         startTime = time.time()
         os.system(cmd)
         elapsedTime = time.time() - startTime
+
+        # Appending results
         with open(os.path.join(outputDir, resultFile), "a") as w:
             w.write(str(energy) + "\t" + str(elapsedTime) + "\n")
         run_number += 1
 
-    w.close()
     logger.info('Function finished')
     return True
