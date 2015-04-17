@@ -68,6 +68,7 @@ if __name__ == '__main__':
     corsikaBin = parser.get(machine, 'corsikaBin')
     corsikaPath = parser.get(machine, 'corsikaPath')
     corsikaMasterInput = parser.get(machine, 'corsikaMasterInput')
+    startRunNumber = int(parser.get(machine, 'startRunNumber'))
     outputDir = parser.get(machine, 'outputDir')
     resultFile = parser.get(machine, 'resultFile')
 
@@ -80,6 +81,7 @@ if __name__ == '__main__':
     change_energy(corsikaBin,
                   corsikaPath,
                   corsikaMasterInput,
+                  startRunNumber,
                   outputDir,
                   resultFile,
                   energyList)

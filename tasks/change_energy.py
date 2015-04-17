@@ -13,15 +13,17 @@ import time
 def change_energy(corsikaBin,
                   corsikaPath,
                   corsikaMasterInput,
+                  startRunNumber,
                   outputDir,
                   resultFile,
                   energyList):
     '''Routine to change the primary energy in a range and
     measure the CPU time of each shower generation
     '''
+
     logger = logging.getLogger('plain')
     logger.info('Function ' + sys._getframe().f_code.co_name + ' started')
-    run_number = 0
+    run_number = startRunNumber
 
     # Writing headers to the output file
     with open(os.path.join(outputDir, resultFile), 'w') as w:
@@ -54,6 +56,8 @@ def change_energy(corsikaBin,
         startTime = time.time()
         os.system(cmd)
         elapsedTime = time.time() - startTime
+        logger.info('Energy: ' + str(energy) + "\t" +
+                    'CPU Time: ' + str(elapsedTime) + "\n")
 
         # Appending results
         with open(os.path.join(outputDir, resultFile), "a") as w:
