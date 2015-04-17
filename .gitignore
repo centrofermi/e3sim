@@ -61,4 +61,6 @@ target/
 
 # DB config
 config/database.ini
+config/specific_machine.py
+
 

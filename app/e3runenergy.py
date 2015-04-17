@@ -29,13 +29,16 @@ Created on Thu Apr 16 12:12:13 2015
 
 import logging
 import logging.config
+import pkg_resources
 from e3sim.tasks.change_energy import change_energy
-from e3sim.config.files_location import (logConfigFile,
-                                         corsikaBin,
-                                         corsikaPath,
-                                         corsikaMasterInput,
-                                         outputDir,
-                                         resultFile)
+from e3sim.config.specific_machine import machine
+try:
+    # For Python 3.0 and later
+    import configparser
+except ImportError:
+    # Fall back to Python 2
+    import ConfigParser
+
 # Set Energy range in GeV
 energyList = [
     '1.E0',
@@ -43,12 +46,27 @@ energyList = [
     '1.E2',
     '1.E3',
     '1.E4',
-    '1.E5',
-    '1.E6',
-    '1.E7',
-    '1.E8']
+#    '1.E5',
+#    '1.E6',
+#    '1.E7',
+#    '1.E8'
+    ]
 
 if __name__ == '__main__':
+
+    # Reading file_location.ini
+    try:
+        parser = configparser.ConfigParser()
+    except:
+        parser = ConfigParser.ConfigParser()
+    parser.read(
+        pkg_resources.resource_filename('e3sim', 'config/files_location.ini'))
+    logConfigFile = parser.get(machine, 'logConfigFile')
+    corsikaBin = parser.get(machine, 'corsikaBin')
+    corsikaPath = parser.get(machine, 'corsikaPath')
+    corsikaMasterInput = parser.get(machine, 'corsikaMasterInput')
+    outputDir = parser.get(machine, 'outputDir')
+    resultFile = parser.get(machine, 'resultFile')
 
     # Set logging options
     logging.config.fileConfig(logConfigFile)
