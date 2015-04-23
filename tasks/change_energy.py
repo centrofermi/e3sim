@@ -40,7 +40,7 @@ def change_energy(corsikaBin,
                     line = line.replace('run_number', str(run_number))
                     line = line.replace('energy_1', str(energy))
                     line = line.replace('energy_2', str(energy))
-                    line = line.replace('seed_1', '123')
+                    line = line.replace('seed_1', '124')
                     line = line.replace('seed_2', '456')
                     line = line.replace('output_dir', outputDir + "/")
                     outfile.write(line)
