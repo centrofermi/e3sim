@@ -54,7 +54,7 @@ def generate_showers(corsikaBin,
                          str(run_number).zfill(6)) + " > " +\
             os.path.join(outputDir, "output-" + str(run_number).zfill(6))
 
-        print(cmd)
+        #print(cmd)
 
     logger.info('Function finished')
     return True

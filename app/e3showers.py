@@ -101,8 +101,8 @@ if __name__ == '__main__':
                               corsikaMasterInput,
                               outputDir,
                               energy,
-                              number,
-                              start,
+                              numberOfShowers,
+                              startRunNumber,
                               coreId,
                               altitude):
         '''Thread generate showers function'''
@@ -113,27 +113,40 @@ if __name__ == '__main__':
             corsikaMasterInput,
             outputDir,
             energy,
-            number,
-            start,
+            numberOfShowers,
+            startRunNumber,
             coreId,
             altitude)
         return
 
+    # Define threads
+    showersPerThread = args.number // args.multicore
+    moduleLastThread = args.number % args.multicore
     # Process list
     proc = []
     # Loop for number of cores: generate different threads
     for coreId in range(args.multicore):
+        startRunNumber = args.start + coreId*showersPerThread
+        # Add the module of the division in the last thread
+        if coreId == args.multicore-1:
+            showersPerThread = showersPerThread + moduleLastThread
         # Call the functions
-        p = Process(target=generate_showers, args=(corsikaBin,
-                                                   corsikaPath,
-                                                   corsikaMasterInput,
-                                                   outputDir,
-                                                   args.energy,
-                                                   args.number,
-                                                   args.start,
-                                                   coreId,
-                                                   args.altitude))
+        p = Process(target=generate_showers,
+                    args=(corsikaBin,
+                          corsikaPath,
+                          corsikaMasterInput,
+                          outputDir,
+                          args.energy,
+                          showersPerThread,
+                          startRunNumber,
+                          coreId,
+                          args.altitude))
+        # Add the module of division only in one stream
         proc.append(p)
+        logger.info('About to start process: ' + str(p) +
+                    '\nThread number: ' + str(coreId) +
+                    '\nstartNumber: ' + str(startRunNumber) +
+                    '\nshowers to generate: ' + str(showersPerThread))
         p.start()
         p.join()
 
