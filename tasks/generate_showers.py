@@ -17,6 +17,7 @@ def generate_showers(corsikaBin,
                      energy,
                      numberOfShowers,
                      startRunNumber,
+                     coreId,
                      altitude):
     '''Routine to generate showers
     '''

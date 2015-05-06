@@ -32,6 +32,7 @@ import logging.config
 import os
 import argparse
 import pkg_resources
+from multiprocessing import Process
 from e3sim.tasks.generate_showers import generate_showers
 from e3sim.config.specific_machine import machine
 try:
@@ -47,24 +48,31 @@ if __name__ == '__main__':
     version = "version 0.5 (Rev. 2015-04-23)"
 
     # Using argparse
-    parser = argparse.ArgumentParser(
+    aparser = argparse.ArgumentParser(
         description='Generate Corsika Showers at specific Energy',
         epilog='Questions at fabrizio.coccetti@centrofermi.it')
-    parser.add_argument("-e", "--energy", type=float, required=True,
-                        help="Value of the energy of the Primary \
-                        in Gev. (i.e. 1.E4)")
-    parser.add_argument("-n", "--number", type=int, required=True,
-                        help="Number of showers to generate \
-                        (i.e. 10000)")
-    parser.add_argument("-s", "--start", type=int, required=True,
-                        help="Start number of the run \
-                        (i.e. 10001)")
-    parser.add_argument("-a", "--altitude", type=int, default=0,
-                        help="Altitude in meters [INT] (default is 0)")
-    parser.add_argument('-v', '--version',
-                        action='version',
-                        version='%(prog)s ' + version)
-    args = parser.parse_args()
+    aparser.add_argument("-e", "--energy", type=float, required=True,
+                         help="Value of the energy of the Primary \
+                         in Gev. (i.e. 1.E4)")
+    aparser.add_argument("-n", "--number", type=int, required=True,
+                         help="Number of showers to generate \
+                         (i.e. 10000)")
+    aparser.add_argument("-s", "--start", type=int, required=True,
+                         help="Start number of the run \
+                         (i.e. 10001)")
+    aparser.add_argument("-m", "--multicore", type=int, default=1,
+                         help="Number of CPU cores to use [INT] \
+                         (default is 1)")
+    aparser.add_argument("-a", "--altitude", type=int, default=0,
+                         help="Altitude in meters [INT] (default is 0)")
+    aparser.add_argument('-v', '--version',
+                         action='version',
+                         version='%(prog)s ' + version)
+    try:
+        args = aparser.parse_args()
+    except:
+        aparser.print_help()
+        aparser.error('This app needs several options :-)')
 
     # Reading file_location.ini
     try:
@@ -85,18 +93,49 @@ if __name__ == '__main__':
     # Set logging options
     logging.config.fileConfig(logConfigFile)
     logger = logging.getLogger('full')
-    logger.info('Started')
+    logger.info('Started. Number of cores: '+str(args.multicore))
 
-    # Call the functions
-    generate_showers(
-        corsikaBin,
-        corsikaPath,
-        corsikaMasterInput,
-        outputDir,
-        args.energy,
-        args.number,
-        args.start,
-        args.altitude)
+    # Define Thread function
+    def generate_showers_core(corsikaBin,
+                              corsikaPath,
+                              corsikaMasterInput,
+                              outputDir,
+                              energy,
+                              number,
+                              start,
+                              coreId,
+                              altitude):
+        '''Thread generate showers function'''
+        # Call the function in tasks
+        generate_showers(
+            corsikaBin,
+            corsikaPath,
+            corsikaMasterInput,
+            outputDir,
+            energy,
+            number,
+            start,
+            coreId,
+            altitude)
+        return
+
+    # Process list
+    proc = []
+    # Loop for number of cores: generate different threads
+    for coreId in range(args.multicore):
+        # Call the functions
+        p = Process(target=generate_showers, args=(corsikaBin,
+                                                   corsikaPath,
+                                                   corsikaMasterInput,
+                                                   outputDir,
+                                                   args.energy,
+                                                   args.number,
+                                                   args.start,
+                                                   coreId,
+                                                   args.altitude))
+        proc.append(p)
+        p.start()
+        p.join()
 
     # Final log message
     logger.info('Finished')
