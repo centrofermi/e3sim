@@ -65,6 +65,8 @@ if __name__ == '__main__':
                          (default is 1)")
     aparser.add_argument("-a", "--altitude", type=int, default=0,
                          help="Altitude in meters [INT] (default is 0)")
+    aparser.add_argument("-o", "--outputdir", type=str,
+                         help="Output Directory full path[STR]")
     aparser.add_argument('-v', '--version',
                          action='version',
                          version='%(prog)s ' + version)
@@ -88,7 +90,10 @@ if __name__ == '__main__':
     corsikaPath = parser.get(machine, 'corsikaPath')
     corsikaMasterInput = parser.get(machine, 'corsikaShowersInput')
     startRunNumber = int(parser.get(machine, 'startRunNumber'))
-    outputDir = parser.get(machine, 'outputDir')
+    if args.outputdir:
+        outputDir = args.outputdir
+    else:
+        outputDir = parser.get(machine, 'outputDir')
 
     # Set logging options
     logging.config.fileConfig(logConfigFile)
@@ -148,7 +153,6 @@ if __name__ == '__main__':
                     '\nstartNumber: ' + str(startRunNumber) +
                     '\nshowers to generate: ' + str(showersPerThread))
         p.start()
-        p.join()
 
     # Final log message
     logger.info('Finished')
