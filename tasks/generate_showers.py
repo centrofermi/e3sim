@@ -38,9 +38,9 @@ def generate_showers(corsikaBin,
                 for line in infile:
                     line = line.replace('run_number', str(run_number))
                     line = line.replace('energy_1',
-                                        "{:4.2E}".format(energy))
+                                        "{0:4.2E}".format(energy))
                     line = line.replace('energy_2',
-                                        "{:4.2E}".format(energy))
+                                        "{0:4.2E}".format(energy))
                     line = line.replace('seed_1', str(run_number))
                     line = line.replace('seed_2', str(run_number+1))
                     line = line.replace('altitude_meters', str(altitude))
