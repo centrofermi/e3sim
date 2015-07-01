@@ -32,6 +32,7 @@ import logging.config
 import os
 import argparse
 import pkg_resources
+from multiprocessing import Process
 from e3sim.tasks.generate_showers import generate_showers
 from e3sim.config.specific_machine import machine
 try:
@@ -97,19 +98,61 @@ if __name__ == '__main__':
     # Set logging options
     logging.config.fileConfig(logConfigFile)
     logger = logging.getLogger('full')
-    logger.info('Started. Number of cores: 1 (working)')
+    logger.info('Started. Number of cores: '+str(args.multicore))
 
-    # Call the function in tasks
-    generate_showers(
-        corsikaBin,
-        corsikaPath,
-        corsikaMasterInput,
-        outputDir,
-        args.energy,
-        args.number,
-        args.start,
-        1,
-        args.altitude)
+    # Define Thread function
+    def generate_showers_core(corsikaBin,
+                              corsikaPath,
+                              corsikaMasterInput,
+                              outputDir,
+                              energy,
+                              numberOfShowers,
+                              startRunNumber,
+                              coreId,
+                              altitude):
+        '''Thread generate showers function'''
+        # Call the function in tasks
+        generate_showers(
+            corsikaBin,
+            corsikaPath,
+            corsikaMasterInput,
+            outputDir,
+            energy,
+            numberOfShowers,
+            startRunNumber,
+            coreId,
+            altitude)
+        return
+
+    # Define threads
+    showersPerThread = args.number // args.multicore
+    moduleLastThread = args.number % args.multicore
+    # Process list
+    proc = []
+    # Loop for number of cores: generate different threads
+    for coreId in range(args.multicore):
+        startRunNumber = args.start + coreId*showersPerThread
+        # Add the module of the division in the last thread
+        if coreId == args.multicore-1:
+            showersPerThread = showersPerThread + moduleLastThread
+        # Call the functions
+        p = Process(target=generate_showers,
+                    args=(corsikaBin,
+                          corsikaPath,
+                          corsikaMasterInput,
+                          outputDir,
+                          args.energy,
+                          showersPerThread,
+                          startRunNumber,
+                          coreId,
+                          args.altitude))
+        # Add the module of division only in one stream
+        proc.append(p)
+        logger.info('About to start process: ' + str(p) +
+                    '\nThread number: ' + str(coreId) +
+                    '\nstartNumber: ' + str(startRunNumber) +
+                    '\nshowers to generate: ' + str(showersPerThread))
+        p.start()
 
     # Final log message
     logger.info('Finished')
