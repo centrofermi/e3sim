@@ -30,6 +30,12 @@ def generate_showers(corsikaBin,
     # Main Loop
     for iShower in range(numberOfShowers):
         run_number = startRunNumber + iShower
+
+        # Check if the file DATXXXXXX exists
+        if os.path.isfile(os.path.join(outputDir, "DAT" + str(run_number).zfill(6))):
+            logger.info("File DAT" + str(run_number).zfill(6) + " exists. Skipping.")    
+            continue
+
         # Write corsika input file
         with open(os.path.join(outputDir, "input-energy-" +
                                str(run_number).zfill(6)),
@@ -53,7 +59,8 @@ def generate_showers(corsikaBin,
             os.path.join(outputDir, "input-energy-" +
                          str(run_number).zfill(6)) + " > " +\
             os.path.join(outputDir, "output-" + str(run_number).zfill(6))
-
+        
+        logger.info('Exec: ' + cmd)
         os.system(cmd)
 
     logger.info('Function finished')
