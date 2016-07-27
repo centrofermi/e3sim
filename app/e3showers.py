@@ -50,15 +50,18 @@ if __name__ == '__main__':
     aparser = argparse.ArgumentParser(
         description='Generate Corsika Showers at specific Energy',
         epilog='Questions at fabrizio.coccetti@centrofermi.it')
-    aparser.add_argument("-e", "--energy", type=float, required=True,
-                         help="Value of the energy of the Primary \
+    aparser.add_argument("-L", "--Lowenergy", type=float, required=True,
+                         help="Low value of the energy of the Primary \
                          in Gev. (i.e. 1.E4)")
+    aparser.add_argument("-H", "--Highenergy", type=float, required=True,
+                         help="High value of the energy of the Primary \
+                         in Gev. (i.e. 1.E5)")
     aparser.add_argument("-n", "--number", type=int, required=True,
                          help="Number of showers to generate \
                          (i.e. 10000)")
     aparser.add_argument("-s", "--start", type=int, required=True,
                          help="Start number of the run \
-                         (i.e. 10001)")
+                         (i.e. 123456)")
     aparser.add_argument("-m", "--multicore", type=int, default=1,
                          help="Number of CPU cores to use [INT] \
                          (default is 1)")
@@ -105,10 +108,11 @@ if __name__ == '__main__':
         corsikaPath,
         corsikaMasterInput,
         outputDir,
-        args.energy,
+        args.Lowenergy,
+        args.Highenergy,
         args.number,
         args.start,
-        1,
+        args.multicore,
         args.altitude)
 
     # Final log message

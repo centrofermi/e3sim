@@ -5,6 +5,7 @@ Created on Thu Apr 23 15:11:38 2015
 @author: Fabrizio Coccetti (fabrizio.coccetti@centrofermi.it) [www.fc8.net]
 """
 
+import random
 import logging
 import os
 import sys
@@ -14,7 +15,8 @@ def generate_showers(corsikaBin,
                      corsikaPath,
                      corsikaMasterInput,
                      outputDir,
-                     energy,
+                     lowenergy,
+                     highenergy,
                      numberOfShowers,
                      startRunNumber,
                      coreId,
@@ -27,6 +29,9 @@ def generate_showers(corsikaBin,
     logger.info('Function ' + sys._getframe().f_code.co_name + ' started')
     logger = logging.getLogger('full')
 
+    # Random Seed
+    random.seed()
+
     # Main Loop
     for iShower in range(numberOfShowers):
         run_number = startRunNumber + iShower
@@ -36,6 +41,10 @@ def generate_showers(corsikaBin,
             logger.info("File DAT" + str(run_number).zfill(6) + " exists. Skipping.")    
             continue
 
+        # Generate Random seed1 and seed2 for corsika input file
+        seed1 = random.randint(1, 900000000)
+        seed2 = random.randint(1, 900000000)
+
         # Write corsika input file
         with open(os.path.join(outputDir, "input-energy-" +
                                str(run_number).zfill(6)),
@@ -44,11 +53,11 @@ def generate_showers(corsikaBin,
                 for line in infile:
                     line = line.replace('run_number', str(run_number))
                     line = line.replace('energy_1',
-                                        "{0:4.2E}".format(energy))
+                                        "{0:4.2E}".format(lowenergy))
                     line = line.replace('energy_2',
-                                        "{0:4.2E}".format(energy))
-                    line = line.replace('seed_1', str(run_number))
-                    line = line.replace('seed_2', str(run_number+1))
+                                        "{0:4.2E}".format(highenergy))
+                    line = line.replace('seed_1', str(seed1))
+                    line = line.replace('seed_2', str(seed2))
                     line = line.replace('altitude_meters', str(altitude))
                     line = line.replace('output_dir', outputDir + "/")
                     outfile.write(line)
