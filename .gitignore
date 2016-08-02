@@ -63,4 +63,6 @@ target/
 config/database.ini
 config/specific_machine.py
 
+# Email config
+config/email.ini
 
