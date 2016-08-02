@@ -44,7 +44,7 @@ except ImportError:
 if __name__ == '__main__':
 
     # Set last version
-    version = "version 0.5 (Rev. 2015-04-23)"
+    version = "version 0.6 (Rev. 2016-08-01)"
 
     # Using argparse
     aparser = argparse.ArgumentParser(
