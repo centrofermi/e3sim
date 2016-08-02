@@ -53,9 +53,9 @@ passwd = parser.get('gmail', 'passwd')
 
 # Create message container - the correct MIME type is multipart/alternative.
 today = datetime.today()
-todayStr = today.strftime("%a %d %B %Y")
+todayStr = today.strftime("%H:%M %a %d %B %Y")
 msg = MIMEMultipart('alternative')
-msg['Subject'] = "Cosmic Shower Simulation Ended" + todayStr
+msg['Subject'] = "Cosmic Shower Simulation Ended " + todayStr
 msg['From'] = emailFrom
 msg['To'] = emailTo
 

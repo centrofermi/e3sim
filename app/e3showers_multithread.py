@@ -160,5 +160,13 @@ if __name__ == '__main__':
                     '\nshowers to generate: ' + str(showersPerThread))
         p.start()
 
-    # Final log message
-    logger.info('Finished')
+    # Waiting
+    for j in proc:
+        j.join()
+
+    # Final part and report
+    logger.info('Multithreading finished')
+    logger.info('Sending email...')
+    os.system('/opt/eee/e3sim/app/e3email.py')
+    logger.info('END')
+
